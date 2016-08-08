@@ -107,15 +107,71 @@
       <t>
 
       </t>
-      <section title="JSON Data Formats">
-	<t>
-	
-	</t>
+      <section title="JSON Data Structures">
+	<section title="Captive Portal Properties">
+	  <t>
+	    The captive portal properties data structure carries information about the captive portal itself, including the challenges required for greater network access:
+	    <list hangIndent="8" style="hanging">
+	      <t hangText="challenges">
+		<list hangIndent="12" style="hanging">
+		  <t hangText="required">True</t>
+		  <t hangText="type">Challenge list structure</t>
+		  <t hangText="description">
+		    The list of challenges that a captive portal poses before a device is allowed access. The challenge list structure is defined in <xref target="data_structure_challenge_list" />.
+		  </t>
+		</list>
+	      </t>
+
+	      <!-- This really belongs somewhere else -->
+	      <t hangText="terms">
+		<list hangIndent="12" style="hanging">
+		  <t hangText="required">False</t>
+		  <t hangText="type">String</t>
+		  <t hangText="description">
+		    The text of the terms and conditions that the captive portal requires the user agree to before the user is allowed access.
+		  </t>		  
+		</list>
+	      </t>
+	      <t hangText="example">
+		<list hangIndent="12" style="hanging">
+		  <t hangText="required">False</t>
+		  <t hangText="type"></t>
+		  <t hangText="description"></t>		  
+		</list>
+	      </t>
+	    </list>
+	  </t>
+
+	</section>
+	<section title="Challenge List" anchor="data_structure_challenge_list">
+	  <t>
+	    The list of challenges that the captive portal will accept for granting access to the greater network.
+	    <list hangIndent="8" style="hanging">
+	      <t hangText="">
+		<list hangIndent="12" style="hanging">
+		  <t hangText="required">True</t>
+		  <t hangText="type">Challenge list structure</t>
+		  <t hangText="description">
+		    The list of challenges that a captive portal poses before a device is allowed access. The challenge list structure is defined in <xref target="data_structure_challenge_list" />.
+		  </t>
+		</list>
+	      </t>
+	    </list>
+	  </t>
+	</section>
       </section>
       <section title="URIs">
 	<t>
-	  
+	  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
 	</t>
+	<section title="Captive Portal Properties">
+	  <t>
+	    Request: / (GET)
+	  </t>
+	  <t>
+	    Response:
+	  </t>
+	</section>
       </section>
     </section>
 
