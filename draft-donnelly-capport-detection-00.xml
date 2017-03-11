@@ -78,13 +78,32 @@
 
     <section title="Workflow">
       <t>
-        Captive portal automation consists of three phases.  The first phase happens as part of the DHCP negotiation. (Margaret: How would I phrase that for the IPv6 RA stuff?)  The second phase consists of the captive portal client querying the captive portal server for its requirements for accessing its protected network, and submitting proofs of meeting those requirements.  In the third phase, the client is granted access to the protected network and can query the captive portal for conditions of the access.
+        Captive portal automation consists of three phases.  The first 
+        phase happens as part of the DHCP negotiation. (Margaret: How 
+        would I phrase that for the IPv6 RA stuff?)  The second phase 
+        consists of the captive portal client querying the captive 
+        portal server for its requirements for accessing its protected 
+        network, and submitting proofs of meeting those requirements.  
+        In the third phase, the client is granted access to the 
+        protected network and can query the captive portal for
+        conditions of the access.
       </t>
       <t>
-        During the first phase, the client acquires an IP address.  As part of the lease, the DHCP server returns an option to the client specifying a URL for the captive portal protocol.
+        During the first phase, the client acquires an IP address.  As
+        part of the lease, the DHCP server returns an option to the 
+        client specifying a URL for the captive portal protocol.
       </t>
       <t>
-        During the second phase, the client accesses the URL provided in the first phase.  The server responds with the current status of the client and any requirements necessary to gain access to the protected network.  The client then submits proofs of satisfying the access requirements to the server.  The server responds with the current status of the client and any additional requirements necessary to gain access to the protected network.  At the end of the second phase, all of the requirements are met; the server grants access to the protected network and responds with a status indicating the access.
+        During the second phase, the client accesses the URL provided 
+        in the first phase.  The server responds with the current 
+        status of the client and any requirements necessary to gain
+        access to the protected network.  The client then submits 
+        proofs of satisfying the access requirements to the server.  
+        The server responds with the current status of the client and 
+        any additional requirements necessary to gain access to the 
+        protected network.  At the end of the second phase, all of the
+        requirements are met; the server grants access to the protected
+        network and responds with a status indicating the access.
       </t>
       <t>
         During the third phase, the client has access to the protected network.  The client may access the URL provided in the first phase again to query the current status.  The server responds with the current status of the client.
@@ -113,34 +132,68 @@
     </section>
 
     <section title="REST API">
-      <t>
-        The device will communicate with the Captive Portal over HTTPS, with a path of 
-        TODO TODO TODO 
-      </t>
       <section title="JSON Data Structures">
         <section title="Captive Portal Response">
           <t>
-            {
-              'state': {
-                'captive': true|false,
-                'expires': "\/Date:(#####)\/"
-              },
-              'requirements': [
-                {
-                  'type':'t&amp;c',
-                  'id':'UUID',
-                  'details':{
-                    'text': "...",
-                    'html': "..."
-                  }
-                },
-                {
-                  'type':'payment',
-                  'id':'UUID',
-                  'details':{...}
-                }
-              ]
-            }
+            <figure>
+              <artwork>
+{
+  'networks' : {
+    'DEFAULT': {
+      'details' : {
+        'range': '0.0.0.0/0'
+        /* What would be useful here? */
+      },
+      'state': {
+        'permitted': true|false,
+        'expires': "\/Date:(#####)\/"
+      },
+      'requirements': [
+        {
+          'type':'t&amp;c',
+          'id':'UUID',
+          'details':{
+            'text': "...",
+            'html': "..."
+          }
+        },
+        {
+          'type':'payment',
+          'id':'UUID',
+          'details':{...}
+        }
+      ]
+    }
+  }
+}
+              </artwork>
+            </figure>
+          </t>
+        </section>
+      
+      
+        <section title="Captive Portal Request">
+          <t>
+            <figure>
+              <artwork>
+{
+  'networks' : [
+    {
+      'id': 'UUID',
+      'requirements': [
+        {
+          'id': 'UUID',
+          'details': {
+            'text': '[signature of challenge text using UUID]',
+            'html': '[signature of challenge html using UUID]'
+          }
+        }
+      ]
+    }
+  ]
+}
+              </artwork>
+            </figure>
           </t>
         </section>
       
