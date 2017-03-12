@@ -66,3 +66,14 @@ Session.vim
 *~
 # auto-generated tag files
 tags
+
+
+
+#####################################################
+# IETF Documents                                    #
+#####################################################
+draft*-[0-9][0-9].html
+draft*-[0-9][0-9].nroff
+draft*-[0-9][0-9].pdf
+draft*-[0-9][0-9]-raw.txt
+draft*-[0-9][0-9].txt
