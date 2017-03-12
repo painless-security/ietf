@@ -139,7 +139,7 @@
   requests and responses.
           </t>
 
-          <section title="Toplevel Object">
+          <section title="Toplevel Object" anchor="json_toplevel_object">
             <t>
   The CAPPORT API will contain JSON-formatted data.  The toplevel object contains a key named "networks" whose value is an array of zero or more network objects.  
             </t>
@@ -150,12 +150,23 @@ $toplevel = {
   $networks
 }
                 </artwork>
-                <postamble>The toplevel request object</postamble>
               </figure>
             </t>
           </section>
           
-          <section title="Networks Object">
+          <section title="Networks Object" anchor="json_networks_object">
+            <t>
+  The networks object represents the list of networks being acted on in this CAPPORT session.
+            </t>
+            <t>
+              <figure>
+                <artwork>
+$networks = {
+  ( "DEFAULT" || // ) = $network +
+}
+                </artwork>
+              </figure>
+            </t>
             <t>
   The networks object is a JSON object whose keys are network names and
   whose values are network objects.  Thus a single response could be 
@@ -164,20 +175,15 @@ $toplevel = {
   acts as a discovery request.
             </t>
             <t>
-              <figure>
-                <artwork>
-$networks = {
-  // = $network +
-}
-                </artwork>
-                <postamble>The networks object</postamble>
-              </figure>
+  The CAPPORT API Server SHOULD use the special name DEFAULT for one 
+  network that provides access to the greater Internet.
             </t>
           </section>
           
-          <section title="Network Object">
+          <section title="Network Object" anchor="json_network_object">
             <t>
-  The network object represents a network protected by the Captive Portal.
+  The network object represents a network protected by the Captive 
+  Portal.
             </t>
             <t>
               <figure>
@@ -188,12 +194,13 @@ $network = {
   'details' : $network_details ?
 }
                 </artwork>
-                <postamble>The network object</postamble>
               </figure>
             </t>
             
             <t>
-  The network object MUST contain a 'requiremetents' key whose value is an array of one or more $condition objects, which represent the conditions for gaining access to this network.
+  The network object MUST contain a 'requiremetents' key whose value is
+  an array of one or more $condition objects, which represent the 
+  conditions for gaining access to this network.
             </t>
             <t>
   CAPPORT API Server responses MUST contain the 'state' key, whose value is the $network_state object, which represents the state of access that the User Equipment has to the network.  
@@ -203,13 +210,17 @@ $network = {
             </t>
           </section>
           
-          <section title="Conditions Object">
+          <section title="Condition Object" anchor="json_condition_object">
             <t>
-  The condition object describes one of the conditions necessary for access to the protected network.  The 
+  The condition object describes one of the conditions necessary for 
+  access to the protected network.  The CAPPORT API Server uses this 
+  object to express the requirements for User Equipment to access the 
+  protected network.  The User Equipment uses this object as proof that
+  it satisfies the requirements for access to the protected network.
             </t>
             <t>
               <figure suppress-title="false" >
-                <artwork xml:space="preserve" align="center" name="" type="" alt="" width="" height="">
+                <artwork xml:space="preserve" align="center">
 $condition = {
   'id' : $uuid,
   'type' : string ? ,
@@ -221,86 +232,90 @@ $condition = {
             </t>
             
             <t>
-  The condition object MUST include an 'id' key whose value is a UUID that uniquely identifies this condition.  This ID will be used to match the client condition satisfactions with the server condition requirements.
+  The condition object MUST include an 'id' key whose value is a UUID 
+  that uniquely identifies this condition.  This ID will be used to 
+  match the client condition satisfactions with the server condition 
+  requirements.
             </t>
             
             <t>
-  CAPPORT API Server responses MUST contain the 'type' key, whose value is a string that represents the type of condition that permits access to the network.
+  CAPPORT API Server responses MUST contain the 'type' key, whose value
+  is a string that represents the type of condition that permits access
+  to the network.
             </t>
             
             <t>
-  CAPPORT API Server responses MUST contain the 'requirement_details' key, whose 
+  CAPPORT API Server responses MUST contain the 'requirement_details' 
+  key, whose value is the $requirement_details object.  The
+  $requirement_details object details the requirements that the User
+  Equipment must pass to gain access to the protected network.
+            </t>
+            
+            <t>
+  User Equipment requests MUST contain the 'satisfaction_details' key,
+  whose value is the $satisfaction_details object.  The $satisfaction
+  _details object details the proof that the User Equipment has 
+  satisfied the conditions of access to the protected network.
             </t>
           </section>
           
         </section>
-        
-        <section title="Captive Portal Request">
-          
-          
 
-
+        <!-- 
+          ** User Equipment Requests to the CAPPORT API Server
+          -->
+        <section title="User Equipment Request">
           <t>
-  The requirement detail object 
+  For the initial CAPPORT request from the User Equipment, the JSON
+  object will consist of the <xref target="json_toplevel_object">
+  toplevel object</xref> with its required 
+  <xref target="json_networks_object">networks object</xref>, but the
+  networks object will contain no networks.  This acts as a discovery
+  request.
           </t>
           <t>
-            <figure>
-              <artwork>
-$requirement = {
-  'id': $uuid,
-  'details': $requirement_detail
+            <figure align="center" anchor="capport_request_initial">
+              <artwork align="center">
+{
+  "networks" : {}
 }
-              </artwork>
-              <postamble>The requirement_detail object</postamble>
-            </figure>
-          </t>
-
-
-          <t>
-            <figure>
-              <artwork>
-$request = {
-  "networks" : [ $network + ]
-}
-
-$network = {
-  'id': string,
-  'requirements' : [ $requirement + ]
-}
-
-$requirement = {
-  'id': $uuid,
-  'details': $detail
-}
-
-$uuid = string
               </artwork>
             </figure>
           </t>
+          <t>
+  Subsequent CAPPORT requests will contain data to satisfy conditions 
+  to access protected networks.  
+          </t>
+
+          <section title="Satisfaction Details Object"
+                   anchor="json_satisfaction_details">
+            <t>
+  The satisfaction_details object details proof that the User Equipment has satisfied one of the conditions of access to a protected network.
+            </t>
+            <t>
+            <figure align="center">
+              <artwork align="center">
+$satisfaction_details = { // : any + }
+              </artwork>
+            </figure>
+            </t>
+            <t>
+  Like the <xref target="json_requirement_details">requirement 
+  details</xref> in the CAPPPORT API Server Response, the list of keys
+  and values for this object will depend on the value of the 'type' key
+  in the <xref target="json_condition_object">enclosing 
+  condition</xref>.  <xref target="condition_dictionary"/> contains
+  conditions and their Satisfaction Details Objects.
+            </t>
+          </section>
+
         </section>
       
       
-        <section title="Captive Portal Response">
+        <section title="CAPPORT API Server Response">
           <t>
             <figure>
               <artwork>
-$response = {
-  "networks" : $networks
-}
-
-$networks = {
-  $netname : $network +
-}
-
-; Network name can be any string
-; "DEFAULT" has special meaning
-$netname = ( "DEFAULT" | // )
-
-$network = {
-  "state"        : $state
-  "requirements" : [ $requirement * ]
-}
-
 $state = {
   "permitted" : boolean
   "expires"   : datetime
@@ -321,75 +336,123 @@ $detail = {
               </artwork>
             </figure>
           </t>
+        
+          <section title="Requirement Details Object" anchor="json_requirement_details">
+            <t>
+  The requirement_details object details the requirements of the 
+  Captive Portal Enforcement for access to a protected network.
+            </t>
+            <t>
+              <figure align="center">
+                <artwork align="center">
+  $requirement_details = { // : any + }
+                </artwork>
+              </figure>
+            </t>
+            <t>
+  Like the <xref target="json_satisfaction_details">satisfaction 
+  details</xref>, of the User Equipment Request, the list of keys and 
+  values for this object will depend on the value of the 'type' key in
+  the <xref target="json_condition_object">enclosing condition</xref>.  
+  <xref target="condition_dictionary"/> contains conditions and their 
+  Requirements Details Objects.
+            </t>
+          </section>
+          
+          
+          <section title="Network State Object" anchor="json_network_state">
+            <t>
+  The network_state object details the current state of the User
+  Equipment access to the protected network.
+            </t>
+            <t>
+              <figure align="center">
+                <artwork align="center">
+$network_state = {
+  "permitted" : boolean ,
+  "expires" : datetime ? ,
+  "bytes_remaining" : integer ?
+}
+                </artwork>
+              </figure>
+            </t>
+            
+            <t>
+  The network_state object MUST contain the "permitted" key, whose boolean value indicates whether the User Equipment is permitted to access the protected network.
+            </t>
+            
+            <t>
+  The network_state object SHOULD contain the "expires" key if the access to the protected network will expire at a known time in the future.  The value is a datetime object of the time the access will expire.
+            </t>
+            
+            <t>
+  The network_state object SHOULD contain the "bytes_remaining" key if the access to the protected network will expire after the User Equipment transfers a known number of bytes.  The value is an integer of the number of bytes remaining.
+            </t>
+            
+          </section>
+          
+          
         </section>
       
       
-      
-      
-	<section title="Captive Portal Properties">
-	  <t>
-	    The captive portal properties data structure carries information about the captive portal itself, including the challenges required for greater network access:
-	    <list hangIndent="8" style="hanging">
-	      <t hangText="challenges">
-		<list hangIndent="12" style="hanging">
-		  <t hangText="required">True</t>
-		  <t hangText="type">Challenge list structure</t>
-		  <t hangText="description">
-		    The list of challenges that a captive portal poses before a device is allowed access. The challenge list structure is defined in <xref target="data_structure_challenge_list" />.
-		  </t>
-		</list>
-	      </t>
-
-	      <!-- This really belongs somewhere else -->
-	      <t hangText="terms">
-		<list hangIndent="12" style="hanging">
-		  <t hangText="required">False</t>
-		  <t hangText="type">String</t>
-		  <t hangText="description">
-		    The text of the terms and conditions that the captive portal requires the user agree to before the user is allowed access.
-		  </t>		  
-		</list>
-	      </t>
-	      <t hangText="example">
-		<list hangIndent="12" style="hanging">
-		  <t hangText="required">False</t>
-		  <t hangText="type"></t>
-		  <t hangText="description"></t>		  
-		</list>
-	      </t>
-	    </list>
-	  </t>
-
-	</section>
-	<section title="Challenge List" anchor="data_structure_challenge_list">
-	  <t>
-	    The list of challenges that the captive portal will accept for granting access to the greater network.
-	    <list hangIndent="8" style="hanging">
-	      <t hangText="">
-		<list hangIndent="12" style="hanging">
-		  <t hangText="required">True</t>
-		  <t hangText="type">Challenge list structure</t>
-		  <t hangText="description">
-		    The list of challenges that a captive portal poses before a device is allowed access. The challenge list structure is defined in <xref target="data_structure_challenge_list" />.
-		  </t>
-		</list>
-	      </t>
-	    </list>
-	  </t>
-	</section>
       </section>
       <section title="URIs">
-	<t>
-	  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
-	</t>
-	<section title="Captive Portal Properties">
-	  <t>
-	    Request: / (GET)
-	  </t>
-	  <t>
-	    Response:
-	  </t>
-	</section>
+        <t>
+  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
+        </t>
+        <section title="Captive Portal Properties">
+          <t>
+  Request: / (GET)
+          </t>
+          <t>
+  Response:
+          </t>
+        </section>
+      </section>
+    </section>
+    
+    <section title="Network Access Conditions" anchor="condition_dictionary">
+      <section title="Terms and Conditions" anchor="t-n-c">
+        <t>
+  One common use of a Captive Portal is for the User to accept some terms and conditions for the network access.  This network access condition will communicate the terms and conditions to the User Equipment, and communicate their acceptance back to the CAPPORT API Server.
+        </t>
+        <t>
+  For this network access condition, the condition object's 'type' value MUST be "t&amp;c"
+        </t>
+        
+        <section title="Requirements">
+          <t>
+            <figure align="center">
+              <artwork align="center">
+$requirement_details = {
+  'text' : string ?,
+  'html' : string ?
+}
+              </artwork>
+            </figure>
+          </t>
+          <t>
+  The requirement_details object for the Terms and Conditions network access condition MUST include the 'text' key, whose value is a URL referencing the plaintext terms and conditions which govern the use of the protected network.
+          </t>
+          <t>
+  The requirement_details object for the Terms and Conditions network access condition MUST include the 'html' key, whose value is a URL referencing the HTML-fomatted terms and conditions which govern the use of the protected network.
+          </t>
+        </section>
+        
+        <section title="Satisfaction">
+          <t>
+            <figure align="center">
+              <artwork align="center">
+$satisfaction_details = {
+  'text' : string ?,
+  'html' : string ?
+}
+              </artwork>
+            </figure>
+          </t>
+          <t>
+          </t>
+        </section>
       </section>
     </section>
 
