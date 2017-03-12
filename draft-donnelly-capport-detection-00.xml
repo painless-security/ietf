@@ -113,27 +113,44 @@
     <section title="DHCP Option">
       <t>
 	In order to use the REST API defined in this document, the
-	caller needs a URI that can be used to reach the Captive
+	caller needs a URL that can be used to reach the Captive
 	Portal.  Captive Portals that implement this specification
-	SHOULD provide, and hosts MAY obtain, the required URI using
+	SHOULD provide, and hosts MAY obtain, the required URL using
 	the DHCP Captive-Portal Option [RFC7710]
       </t>
       <t>
 	To provide backwards compatibility with the original use of
 	the DHCP Captive Portal Option, the REST API defined in this
-	document is exclusively accessed using HTTP Methods with a
-	Content-Type of "json".  Captive Portals that implement the
-	DHCP Captive-Portal Option MUST respond to an HTTP GET that
-	has a Content-Type of "html" with HTML content that, when
-	displayed in a web browser, will allow the user to
-	interactively meet the Captive Portal conditions for network
-	access.
+	document is exclusively accessed using HTTP Methods with an 
+  Accept header value of "application/json".  Captive Portals
+  that implement the DHCP Captive-Portal Option MUST respond 
+  to an HTTP GET that has an Accept header of "text/html" with
+  HTML content that, when displayed in a web browser, will 
+  allow the user to interactively meet the Captive Portal
+  conditions for network access.
       </t>
     </section>
 
     <section title="REST API">
     
-      <section title="URLs">
+      <section title="URLs and HTTP Methods">
+        <section title="Fallback URL">
+          <t>
+  The CAPPORT API Server SHOULD respond to HTTP requests to the provided URL that specify an Accept header value of "text/html" with HTML content instead of this protocol.  If the User Equipment determines that it is unable to satisfy the conditions for network access, it SHOULD display this fallback URL in a web browser to allow the user to complete the network access outside of this protocol.
+          </t>
+        </section>
+        
+        <section title="CAPPORT REST API URL" anchor="i_didnt_mean_to_scream_that_title">
+          <t>
+  
+          </t>
+        </section>
+
+
+
+
+
+        
         <t>
   The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
         </t>
