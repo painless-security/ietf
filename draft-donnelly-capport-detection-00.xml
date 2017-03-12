@@ -133,6 +133,7 @@
 
     <section title="REST API">
     
+      <section title="URLs">
         <t>
   The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
         </t>
@@ -213,9 +214,10 @@ $network = {
             </t>
             
             <t>
-  The network object MUST contain a 'requiremetents' key whose value is
-  an array of one or more $condition objects, which represent the 
-  conditions for gaining access to this network.
+  The network object MUST contain a 'requirements' key whose value is
+  an array of one or more $condition objects, which represent the unmet
+  conditions for gaining access to this network.  The network object
+  MUST NOT contain requirements that have already been met.
             </t>
             <t>
   CAPPORT API Server responses MUST contain the 'state' key, whose value is the $network_state object, which represents the state of access that the User Equipment has to the network.  
@@ -328,30 +330,6 @@ $satisfaction_details = { // : any + }
       
       
         <section title="CAPPORT API Server Response">
-          <t>
-            <figure>
-              <artwork>
-$state = {
-  "permitted" : boolean
-  "expires"   : datetime
-}
-
-$requirement = {
-  'type'    : string,
-  'id'      : $uuid,
-  'details' : $detail
-}
-
-$uuid = string
-
-$detail = {
-  // : any +
-}
-
-              </artwork>
-            </figure>
-          </t>
-        
           <section title="Requirement Details Object" anchor="json_requirement_details">
             <t>
   The requirement_details object details the requirements of the 
