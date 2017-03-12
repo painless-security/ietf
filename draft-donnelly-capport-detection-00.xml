@@ -132,6 +132,21 @@
     </section>
 
     <section title="REST API">
+    
+        <t>
+  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
+        </t>
+        <section title="Captive Portal Properties">
+          <t>
+  Request: / (GET)
+          </t>
+          <t>
+  Response:
+          </t>
+        </section>
+      </section>
+    
+    
       <section title="JSON Data Structures">
         <section title="CAPPORT Common Elements">
           <t>
@@ -396,19 +411,7 @@ $network_state = {
       
       
       </section>
-      <section title="URIs">
-        <t>
-  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
-        </t>
-        <section title="Captive Portal Properties">
-          <t>
-  Request: / (GET)
-          </t>
-          <t>
-  Response:
-          </t>
-        </section>
-      </section>
+      
     </section>
     
     <section title="Network Access Conditions" anchor="condition_dictionary">
