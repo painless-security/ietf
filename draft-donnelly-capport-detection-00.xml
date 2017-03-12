@@ -126,14 +126,136 @@
 	DHCP Captive-Portal Option MUST respond to an HTTP GET that
 	has a Content-Type of "html" with HTML content that, when
 	displayed in a web browser, will allow the user to
-	interactively meet the Captive Portal requirements for network
+	interactively meet the Captive Portal conditions for network
 	access.
       </t>
     </section>
 
     <section title="REST API">
       <section title="JSON Data Structures">
+        <section title="CAPPORT Common Elements">
+          <t>
+  The CAPPORT data structures will share some common structure between 
+  requests and responses.
+          </t>
+
+          <section title="Toplevel Object">
+            <t>
+  The CAPPORT API will contain JSON-formatted data.  The toplevel object contains a key named "networks" whose value is an array of zero or more network objects.  
+            </t>
+            <t>
+              <figure>
+                <artwork>
+$toplevel = {
+  $networks
+}
+                </artwork>
+                <postamble>The toplevel request object</postamble>
+              </figure>
+            </t>
+          </section>
+          
+          <section title="Networks Object">
+            <t>
+  The networks object is a JSON object whose keys are network names and
+  whose values are network objects.  Thus a single response could be 
+  used in gaining access to multiple protected networks at once.  The 
+  first request to the CAPPORT API Server will contain no networks, and
+  acts as a discovery request.
+            </t>
+            <t>
+              <figure>
+                <artwork>
+$networks = {
+  // = $network +
+}
+                </artwork>
+                <postamble>The networks object</postamble>
+              </figure>
+            </t>
+          </section>
+          
+          <section title="Network Object">
+            <t>
+  The network object represents a network protected by the Captive Portal.
+            </t>
+            <t>
+              <figure>
+                <artwork>
+$network = {
+  'conditions' : [ $condition + ] ,
+  'state' : $network_state ? ,
+  'details' : $network_details ?
+}
+                </artwork>
+                <postamble>The network object</postamble>
+              </figure>
+            </t>
+            
+            <t>
+  The network object MUST contain a 'requiremetents' key whose value is an array of one or more $condition objects, which represent the conditions for gaining access to this network.
+            </t>
+            <t>
+  CAPPORT API Server responses MUST contain the 'state' key, whose value is the $network_state object, which represents the state of access that the User Equipment has to the network.  
+            </t>
+            <t>
+  CAPPORT API Server responses SHOULD contain the 'details' key, whose value is the $network_details object, which provides relevant information about the network.
+            </t>
+          </section>
+          
+          <section title="Conditions Object">
+            <t>
+  The condition object describes one of the conditions necessary for access to the protected network.  The 
+            </t>
+            <t>
+              <figure suppress-title="false" >
+                <artwork xml:space="preserve" align="center" name="" type="" alt="" width="" height="">
+$condition = {
+  'id' : $uuid,
+  'type' : string ? ,
+  'requirement_details' : $requirement_details ? ,
+  'satisfaction_details' : $satisfaction_details ?
+}
+                </artwork>
+              </figure>
+            </t>
+            
+            <t>
+  The condition object MUST include an 'id' key whose value is a UUID that uniquely identifies this condition.  This ID will be used to match the client condition satisfactions with the server condition requirements.
+            </t>
+            
+            <t>
+  CAPPORT API Server responses MUST contain the 'type' key, whose value is a string that represents the type of condition that permits access to the network.
+            </t>
+            
+            <t>
+  CAPPORT API Server responses MUST contain the 'requirement_details' key, whose 
+            </t>
+          </section>
+          
+        </section>
+        
         <section title="Captive Portal Request">
+          
+          
+
+
+          <t>
+  The requirement detail object 
+          </t>
+          <t>
+            <figure>
+              <artwork>
+$requirement = {
+  'id': $uuid,
+  'details': $requirement_detail
+}
+              </artwork>
+              <postamble>The requirement_detail object</postamble>
+            </figure>
+          </t>
+
+
           <t>
             <figure>
               <artwork>
