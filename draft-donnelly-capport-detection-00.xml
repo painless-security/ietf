@@ -133,65 +133,69 @@
 
     <section title="REST API">
       <section title="JSON Data Structures">
-        <section title="Captive Portal Response">
+        <section title="Captive Portal Request">
           <t>
             <figure>
               <artwork>
-{
-  'networks' : {
-    'DEFAULT': {
-      'details' : {
-        'range': '0.0.0.0/0'
-        /* What would be useful here? */
-      },
-      'state': {
-        'permitted': true|false,
-        'expires': "\/Date:(#####)\/"
-      },
-      'requirements': [
-        {
-          'type':'t&amp;c',
-          'id':'UUID',
-          'details':{
-            'text': "...",
-            'html': "..."
-          }
-        },
-        {
-          'type':'payment',
-          'id':'UUID',
-          'details':{...}
-        }
-      ]
-    }
-  }
+$request = {
+  "networks" : [ $network + ]
 }
+
+$network = {
+  'id': string,
+  'requirements' : [ $requirement + ]
+}
+
+$requirement = {
+  'id': $uuid,
+  'details': $detail
+}
+
+$uuid = string
               </artwork>
             </figure>
           </t>
         </section>
       
       
-        <section title="Captive Portal Request">
+        <section title="Captive Portal Response">
           <t>
             <figure>
               <artwork>
-{
-  'networks' : [
-    {
-      'id': 'UUID',
-      'requirements': [
-        {
-          'id': 'UUID',
-          'details': {
-            'text': '[signature of challenge text using UUID]',
-            'html': '[signature of challenge html using UUID]'
-          }
-        }
-      ]
-    }
-  ]
+$response = {
+  "networks" : $networks
 }
+
+$networks = {
+  $netname : $network +
+}
+
+; Network name can be any string
+; "DEFAULT" has special meaning
+$netname = ( "DEFAULT" | // )
+
+$network = {
+  "state"        : $state
+  "requirements" : [ $requirement * ]
+}
+
+$state = {
+  "permitted" : boolean
+  "expires"   : datetime
+}
+
+$requirement = {
+  'type'    : string,
+  'id'      : $uuid,
+  'details' : $detail
+}
+
+$uuid = string
+
+$detail = {
+  // : any +
+}
+
               </artwork>
             </figure>
           </t>
