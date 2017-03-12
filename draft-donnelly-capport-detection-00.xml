@@ -412,7 +412,7 @@ $network_state = {
     </section>
     
     <section title="Network Access Conditions" anchor="condition_dictionary">
-      <section title="Terms and Conditions" anchor="t-n-c">
+      <section title="Terms and Conditions">
         <t>
   One common use of a Captive Portal is for the User to accept some terms and conditions for the network access.  This network access condition will communicate the terms and conditions to the User Equipment, and communicate their acceptance back to the CAPPORT API Server.
         </t>
@@ -420,7 +420,7 @@ $network_state = {
   For this network access condition, the condition object's 'type' value MUST be "t&amp;c"
         </t>
         
-        <section title="Requirements">
+        <section title="Requirements" anchor="json_t-n-c_requirements">
           <t>
             <figure align="center">
               <artwork align="center">
@@ -451,8 +451,52 @@ $satisfaction_details = {
             </figure>
           </t>
           <t>
+  The satisfaction_details object for the Terms and Conditions network access condition MUST include one of 'text' or 'html' as a key.  The User Equipment request MAY include both.</t>
+          <t>
+  The "text" key of the satisfaction_details object for the Terms and Conditions network access condition has a string value that is an MD5 sum of the document referred to by the URL provided in the <xref target="json_t-n-c_requirements">Requirement Details</xref> "text" key's value.
+          </t>
+          <t>
+  The "html" key of the satisfaction_details object for the Terms and Conditions network access condition has a string value that is an MD5 sum of the document referred to by the URL provided in the <xref target="json_t-n-c_requirements">Requirement Details</xref> "html" key's value.
           </t>
         </section>
+      </section>
+      
+      
+      <section title="Passcode">
+        <t>
+  Another common use of a captive portal is to have a user enter a passcode to gain access to the protected network.  The Passcode network access condition will communicate the requirement for that passcode and satisfy the Captive Portal Enforcement that the User Equipment has the correct passcode.
+        </t>
+
+        <section title="Requirements">
+          <t>
+            <figure align="center">
+              <artwork align="center">
+$requirement_details = { }
+              </artwork>
+            </figure>
+          </t>
+          <t>
+  The requirement_details object of the Passcode network access condition has no elements.
+          </t>
+        </section>
+        
+        <section title="Satisfaction">
+          <t>
+            <figure align="center">
+              <artwork align="center">
+$satisfaction_details = {
+  'passcode' : string
+}
+              </artwork>
+            </figure>
+          </t>
+          <t>
+  The satisfaction_details object of the Passcode network access condition MUST include the "passcode" key, whose value is a string of the passcode that grants access to the protected network.
+          </t>
+        </section>
+
+        
+
       </section>
     </section>
 
