@@ -555,6 +555,15 @@
           For this network access condition, the condition object's
           'type' value MUST be "t&amp;c"
         </t>
+        <t>
+          This condition is satisfied by presenting an MD5 sum of 
+          the terms and conditions document referenced by the 
+          requirements. This has the property that the MD5 sum will 
+          not change unless the terms and conditions document 
+          itself changes. User Equipment MAY cache values and 
+          submit a cached value for the MD5 sum preemptively 
+          without retrieving the terms and conditions document. 
+        </t>
         
         <section title="Requirements" anchor="json_t-n-c_requirements">
           <t>
@@ -597,23 +606,21 @@
           <t>
             The satisfaction_details object for the Terms and
             Conditions network access condition MUST include one of
-            "text" or "html" as a key.  The User Equipment request MAY
+            "text" or "html" as a key.  The satisfaction_details MAY
             include both.</t>
           <t>
-            The "text" key of the satisfaction_details object for the
-            Terms and Conditions network access condition has a string
-            value that is an MD5 sum of the document referred to by
-            the URL provided in
-            the <xref target="json_t-n-c_requirements">Requirement
+            The "text" key of the satisfaction_details object has a
+            string value that is an MD5 sum of the document referred
+            to by the URL provided in the
+            <xref target="json_t-n-c_requirements">Requirement
             Details</xref> "text" key's value.
           </t>
           <t>
-            The "html" key of the satisfaction_details object for the
-            Terms and Conditions network access condition has a string
-            value that is an MD5 sum of the document referred to by
-            the URL provided in
-            the <xref target="json_t-n-c_requirements">Requirement
-            Details</xref> "html" key's value.
+            The "html" key of the satisfaction_details object has a 
+            string value that is an MD5 sum of the document referred 
+            to by the URL provided in the <xref 
+            target="json_t-n-c_requirements">Requirement 
+            Details</xref> "html" key's value. 
           </t>
         </section>
       </section>
