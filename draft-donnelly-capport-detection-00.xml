@@ -528,14 +528,17 @@
               The network_state object SHOULD contain the "expires"
               key if the access to the protected network will expire
               at a known time in the future.  The value is a datetime
-              object of the time the access will expire.
+              object of the time the access will expire.  If there is
+              not a known expiration time, the key SHOULD be omitted.
             </t>
             <t>
               The network_state object SHOULD contain the
               "bytes_remaining" key if the access to the protected
               network will expire after the User Equipment transfers a
               known number of bytes.  The value is an integer of the
-              number of bytes remaining.
+              number of bytes remaining.  If there is not a known limit 
+              for this User Equipment, the key MAY be omitted or
+              its value MAY be -1.
             </t>
           </section>
         </section>
@@ -543,6 +546,13 @@
     </section>
     
     <section title="Network Access Conditions" anchor="condition_dictionary">
+      <t>
+        Captive Portal systems will have many conditions for access 
+        to their protected networks. The conditions object is open 
+        for use in expressing different conditions. Each condition 
+        MUST define a "type" string, its requirement_details, and 
+        its satisfaction_details. 
+      </t>
       <section title="Terms and Conditions">
         <t>
           One common use of a Captive Portal is for the User to accept
