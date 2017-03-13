@@ -136,32 +136,24 @@
       <section title="URLs and HTTP Methods">
         <section title="Fallback URL">
           <t>
-  The CAPPORT API Server SHOULD respond to HTTP requests to the provided URL that specify an Accept header value of "text/html" with HTML content instead of this protocol.  If the User Equipment determines that it is unable to satisfy the conditions for network access, it SHOULD display this fallback URL in a web browser to allow the user to complete the network access outside of this protocol.
+  The CAPPORT API Server SHOULD respond to HTTP GET requests to the provided URL that specify an Accept header value of "text/html" with HTML content instead of this protocol.  If the User Equipment determines that it is unable to satisfy the conditions for network access, it SHOULD display this fallback URL in a web browser to allow the user to complete the network access outside of this protocol.
           </t>
         </section>
         
-        <section title="CAPPORT REST API URL" anchor="i_didnt_mean_to_scream_that_title">
+        <section title="CAPPORT REST API POST URL"
+                 anchor="i_didnt_mean_to_scream_that_title_but_its_all_acronyms">
           <t>
-  
+  The CAPPORT API Server SHOULD respond to HTTP POST requests to the provided URL that specify an Accept header value of "application/json" with the CAPPORT JSON protocol.  
           </t>
         </section>
-
-
-
-
-
         
-        <t>
-  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
-        </t>
-        <section title="Captive Portal Properties">
+        <section title="CAPPORT REST API DELETE URL">
           <t>
-  Request: / (GET)
-          </t>
-          <t>
-  Response:
+  The CAPPORT API Server SHOULD respond to HTTP DELETE requests to the provided URL that specify an Accept header value of "application/json" with the CAPPORT JSON protocol.  
           </t>
         </section>
+
+
       </section>
     
     
