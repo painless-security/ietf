@@ -115,14 +115,14 @@
         The second phase begins with the User Equipment accessing the
         URL provided in the first phase.  The CAPPORT API Server
         responds with the current status of the User Equipment's
-        access to the protected networks and any conditions necessary
-        to gain access to the protected networks.  The User Equipment
-        then submits proofs of satisfying the access conditions to the
-        CAPPORT API Server.  The CAPPORT API Server again responds
-        with the current status of the User Equipment and any
-        additional conditions necessary to gain access to the
+        access to the protected networks and any conditions
+        requirements to gain access to the protected networks.  The
+        User Equipment then submits proofs of satisfying the access
+        requirements to the CAPPORT API Server.  The CAPPORT API Server
+        again responds with the current status of the User Equipment
+        and any additional requirements necessary to gain access to the
         protected network.  The second phase continues until all of
-        the conditions are met; the CAPPORT API Server grants access
+        the requirements are met; the CAPPORT API Server grants access
         to the protected network and responds with a status indicating
         the access.
       </t>
@@ -131,7 +131,7 @@
         communicating over the CAPPORT protocol and instead direct a
         web browser to access the URL.  The web browser then becomes
         the agent for proving that the User Equipment meets the
-        conditions for access to the protected networks.
+        requirements for access to the protected networks.
       </t>
       <t>
         During the third phase, the User Equipment has access to the
@@ -147,28 +147,35 @@
 
     <section title="Use of the DHCP Captive-Portal Option">
       <t>
-	As decribed above, to use the CAPPORT API, User Equipment 
-	needs a URL that can be used to reach the CAPPORT API 
-	Server.  DHCP servers on Captive Portal networks SHOULD
-	provide, and hosts MAY obtain, the required URL using the DHCP
-	Captive-Portal Option for IPv4, and IPv6 RAs for IPv6
-	<xref target="RFC7710"/>.
+	As decribed above, to use the CAPPORT API, User Equipment
+	needs a URL that can be used to reach the CAPPORT API Server.
+	DHCP Servers and IPv6 Routers shoudl provide, and User
+	Equipment SHOULD obtain, the required URL using the DCHP
+	DCHP Captive-Portal Option or the IPv6 RA Captive-Portal
+	Option, as described in <xref target="RFC7710"/>.
       </t>
       <t>
 	To provide backwards compatibility with the original use of
-	the DHCP Captive-Portal Option, the REST API defined in this
-	document is exclusively accessed using HTTP Methods with an
-	Accept header value of "application/json".  Captive Portals
-	that implement the DHCP Captive-Portal Option SHOULD respond to
+	the DHCP and RA options described in RFC7710, the CAPPORT API
+	defined in this document is exclusively accessed using HTTP
+	Methods with an Accept header value of "application/json".
+	Captive Portals that implement the CAPPORT API SHOULD respond to
 	an HTTP GET that has an Accept header of "text/html" with HTML
 	content that, when displayed in a web browser, will allow the
-	user to interactively meet the Captive Portal conditions for
+	user to interactively meet the Captive Portal requirements for
 	network access.
       </t>
     </section>
 
-    <section title="REST API">
+    <section title="CAPPORT API">
+      <t>
+	This section defines the CAPPORT API.
+      </t>
       <section title="URLs and HTTP Methods">
+	<t>
+	  This section describes the URLs that can be used to 
+	  access the CAPPORT API.
+	</t>
         <section title="Associating User Equipment with its URL">
           <t>
             The CAPPORT API Server SHOULD associate an incoming
@@ -190,7 +197,7 @@
           </t>
         </section>
         
-        <section title="CAPPORT REST API POST URL"
+        <section title="CAPPORT API POST URL"
                  anchor="i_didnt_mean_to_scream_that_title_but_its_all_acronyms">
           <t>
             The CAPPORT API Server SHOULD respond to HTTP POST
@@ -200,36 +207,38 @@
           </t>
         </section>
         
-        <section title="CAPPORT REST API DELETE URL">
+        <section title="CAPPORT API DELETE URL">
           <t>
             The CAPPORT API Server SHOULD respond to HTTP DELETE
             requests to the provided URL that specify an Accept header
             value of "application/json" by revoking any network access
             to protected networks immediately.  The CAPPORT API Server
-            SHOULD NOT allow any device other than the User Equipment
-            to DELETE the network access of the User Equipment.
+            MUST NOT allow any device other than the User Equipment
+            to DELETE the network access of the User Equipment via
+	    the CAPPORT API.
           </t>
         </section>
       </section>
     
       <section title="JSON Data Structures">
 	<t>
-            The CAPPORT API data structures are specified in JavaScript
-	    Object Notation (JSON) <xref target="RFC7159"/>.  This 
-	    document specifies the structure of the JSON structures
-	    and message using the JSON Content Rules (JCR) defined in 
-	    draft-newton-rdap-jcr <xref target="I-D.newton-rdap-jcr"/>.
+            The CAPPORT API data structures are specified in
+	    JavaScript Object Notation (JSON)
+	    <xref target="RFC7159"/>.  This document specifies JSON
+	    structures and message using the JSON Content Rules (JCR)
+	    defined in draft-newton-rdap-jcr
+	    <xref target="I-D.newton-rdap-jcr"/>.
 	</t>
         <section title="CAPPORT Common Elements">
           <t>
-            Some common structures are shared between requests and
-            responses.
+            This section describes structures that are shared between
+            requests and responses.
           </t>
 
           <section title="Toplevel Object" anchor="json_toplevel_object">
             <t>
               The CAPPORT API will contain JSON-formatted data.  The
-              toplevel object contains a key named "networks" whose
+              toplevel object contains a networks object whose
               value is an array of zero or more network objects.
             </t>
             <t>
@@ -247,9 +256,16 @@
           <section title="Networks Object" anchor="json_networks_object">
             <t>
               The networks object represents the list of networks
-              being acted on in this CAPPORT session.  The session-token
-	      object contains a session token which will be used in 
-	      ICMP requests as discussed in RFC 7710.
+              being acted on in this CAPPORT session.  The CAPPORT API
+              Server MUST include on, and MAY include more than one
+              network in this list.
+	    </t>
+	    <t>
+	      The session-token object contains a session token which
+              will be used in ICMP requests as discussed in the
+              CAPPORT Architecture
+              <xref target="I-D.larose-capport-architecture"/>.
+  
             </t>
 	    <t>
 	      QUESTION: Should the session token just be provided by 
@@ -297,11 +313,11 @@
               </figure>
             </t>
             <t>
-              The network object MUST contain a 'requirements' key
-              whose value is an array of one or more $condition
-              objects, which represent the unmet conditions for
-              gaining access to this network.  The network object MUST
-              NOT contain requirements that have already been met.
+              The network object MUST contain a 'conditions' key whose
+              value is an array of one or more $condition objects,
+              which represent the unmet conditions for gaining access
+              to this network.  The conditions object SHOULD NOT
+              contain conditions that have already been met.
             </t>
             <t>
               CAPPORT API Server responses MUST contain the 'state'
@@ -324,8 +340,8 @@
               CAPPORT API Server uses this object to express the
               requirements for User Equipment to access the protected
               network.  The User Equipment uses this object as proof
-              that it satisfies the requirements for access to the
-              protected network.
+              that it has satisfied the corresponding requirement for
+              access to the protected network.
             </t>
             <t>
               <figure suppress-title="false" >
