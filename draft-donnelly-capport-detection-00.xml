@@ -78,35 +78,19 @@
 
     <section title="Workflow">
       <t>
-        Captive portal automation consists of three phases.  The first 
-        phase happens as part of the DHCP negotiation. (Margaret: How 
-        would I phrase that for the IPv6 RA stuff?)  The second phase 
-        consists of the captive portal client querying the captive 
-        portal server for its requirements for accessing its protected 
-        network, and submitting proofs of meeting those requirements.  
-        In the third phase, the client is granted access to the 
-        protected network and can query the captive portal for
-        conditions of the access.
+        The CAPPORT protocol consists of three phases.  The first phase happens as part of the DHCP negotiation. (Margaret: How would I phrase that for the IPv6 RA stuff?)  The second phase consists of the User Equipment querying the CAPPORT API Server for the requirements for accessing its protected networks, and submitting proofs of meeting those requirements.  In the third phase, the User Equipment is granted access to the protected network and can query the CAPPORT API Server for details about the access.
       </t>
       <t>
-        During the first phase, the client acquires an IP address.  As
-        part of the lease, the DHCP server returns an option to the 
-        client specifying a URL for the captive portal protocol.
+        During the first phase, the User Equipment acquires an IP address.  As part of the lease, the DHCP server returns an option to the User Equipment specifying the URL for the CAPPORT API Server.
       </t>
       <t>
-        During the second phase, the client accesses the URL provided 
-        in the first phase.  The server responds with the current 
-        status of the client and any requirements necessary to gain
-        access to the protected network.  The client then submits 
-        proofs of satisfying the access requirements to the server.  
-        The server responds with the current status of the client and 
-        any additional requirements necessary to gain access to the 
-        protected network.  At the end of the second phase, all of the
-        requirements are met; the server grants access to the protected
-        network and responds with a status indicating the access.
+        The second phase begins with the User Equipment accessing the URL provided in the first phase.  The CAPPORT API Server responds with the current status of the User Equipment's access to the protected networks and any conditions necessary to gain access to the protected networks.  The User Equipment then submits proofs of satisfying the access conditions to the CAPPORT API Server.  The CAPPORT API Server again responds with the current status of the User Equipment and any additional conditions necessary to gain access to the protected network.  The second phase continues until all of the conditions are met; the CAPPORT API Server grants access to the protected network and responds with a status indicating the access.
       </t>
       <t>
-        During the third phase, the client has access to the protected network.  The client may access the URL provided in the first phase again to query the current status.  The server responds with the current status of the client.
+        At any point in the second phase, the User Equipment MAY stop communicating over the CAPPORT protocol and instead direct a web browser to access the URL.  The web browser then becomes the agent for proving that the User Equipment meets the conditions for access to the protected networks.
+      </t>
+      <t>
+        During the third phase, the User Equipment has access to the protected network.  The User Equipment may access the URL provided in the first phase again to query the current status.  The CAPPORT API Server responds with the current status of the User Equipment.  The CAPPORT API Server SHOULD respond with the current status of the User Equipment regardless of whether the User Equipment used the automated CAPPORT protocol or a web browser to complete the second phase.
       </t>
     </section>
 
