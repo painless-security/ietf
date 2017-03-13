@@ -134,6 +134,12 @@
     <section title="REST API">
     
       <section title="URLs and HTTP Methods">
+        <section title="Associating User Equipment with its URL">
+          <t>
+  The CAPPORT API Server SHOULD associate an incoming request with a particular User Equipment consistently.  [TODO: specify how this would happen.]
+          </t>
+        </section>
+      
         <section title="Fallback URL">
           <t>
   The CAPPORT API Server SHOULD respond to HTTP GET requests to the provided URL that specify an Accept header value of "text/html" with HTML content instead of this protocol.  If the User Equipment determines that it is unable to satisfy the conditions for network access, it SHOULD display this fallback URL in a web browser to allow the user to complete the network access outside of this protocol.
@@ -149,7 +155,7 @@
         
         <section title="CAPPORT REST API DELETE URL">
           <t>
-  The CAPPORT API Server SHOULD respond to HTTP DELETE requests to the provided URL that specify an Accept header value of "application/json" with the CAPPORT JSON protocol.  
+  The CAPPORT API Server SHOULD respond to HTTP DELETE requests to the provided URL that specify an Accept header value of "application/json" by revoking any network access to protected networks immediately.  The CAPPORT API Server SHOULD NOT allow any device other than the User Equipment to DELETE the network access of the User Equipment.
           </t>
         </section>
 
@@ -327,7 +333,7 @@ $satisfaction_details = { // : any + }
             </t>
             <t>
   Like the <xref target="json_requirement_details">requirement 
-  details</xref> in the CAPPPORT API Server Response, the list of keys
+  details</xref> in the CAPPORT API Server Response, the list of keys
   and values for this object will depend on the value of the 'type' key
   in the <xref target="json_condition_object">enclosing 
   condition</xref>.  <xref target="condition_dictionary"/> contains
