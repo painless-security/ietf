@@ -623,9 +623,14 @@
           Another common use of a captive portal is to have a user
           enter a passcode to gain access to the protected network.
           The Passcode network access condition will communicate the
-          requirement for that passcode and satisfy the Captive Portal
-          Enforcement that the User Equipment has the correct
-          passcode.
+          requirement for that passcode to the User Equipment and 
+          satisfy the Captive Portal Enforcement that the User
+          Equipment has the correct passcode.
+        </t>
+        
+        <t>
+          For the Passcode network access condition, the condition
+          object's "type" value must be "passcode".
         </t>
 
         <section title="Requirements">
