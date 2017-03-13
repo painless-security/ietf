@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 	  <!ENTITY rfc7749 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7749.xml'>
+	  <!ENTITY rfc7710 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7710.xml'>
 	  <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -47,7 +48,7 @@
       </address>
     </author>
 
-    <date day="26" month="July" year="2016"/>
+    <date day="13" month="March" year="2017"/>
 
     <area>ART</area>
 
@@ -106,7 +107,10 @@
         network and responds with a status indicating the access.
       </t>
       <t>
-        During the third phase, the client has access to the protected network.  The client may access the URL provided in the first phase again to query the current status.  The server responds with the current status of the client.
+        During the third phase, the client has access to the protected
+        network.  The client may access the URL provided in the first
+        phase again to query the current status.  The server responds
+        with the current status of the client.
       </t>
     </section>
 
@@ -116,7 +120,7 @@
 	caller needs a URI that can be used to reach the Captive
 	Portal.  Captive Portals that implement this specification
 	SHOULD provide, and hosts MAY obtain, the required URI using
-	the DHCP Captive-Portal Option [RFC7710]
+	the DHCP Captive-Portal Option <xref target="RFC2119"/>.
       </t>
       <t>
 	To provide backwards compatibility with the original use of
@@ -254,7 +258,9 @@
       </section>
       <section title="URIs">
 	<t>
-	  The URIs of the captive portal protocol will be calculated relative to the URI supplied by the DHCP server in the DHCP Captive-Portal Option defined in RFC 7710.
+	  The URIs of the captive portal protocol will be calculated
+	  relative to the URI supplied by the DHCP server in the DHCP
+	  Captive-Portal Option defined in RFC 7710.
 	</t>
 	<section title="Captive Portal Properties">
 	  <t>
@@ -293,6 +299,7 @@
       &rfc2119;
     </references>
     <references title="Informative References">
+      &rfc7710;
       &rfc7749;
     </references>
   </back>
