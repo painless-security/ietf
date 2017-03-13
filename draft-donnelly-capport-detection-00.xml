@@ -3,9 +3,9 @@
 	  <!ENTITY rfc7749 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7749.xml'>
 	  <!ENTITY rfc7710 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7710.xml'>
 	  <!ENTITY rfc2119 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml'>
-	  <!ENTITY rfc7159 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml-ids/reference.RFC.7159.xml'>
+	  <!ENTITY rfc7159 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7159.xml'>
 	  <!ENTITY cparch PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml-ids/reference.I-D.larose-capport-architecture.xml'>	  
-	  <!ENTITY jcr    PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml-ids/reference.I-D.newton-rdap-jcr.xml'>	  
+	  <!ENTITY jcr    PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml-ids/reference.I-D.newton-json-content-rules.xml'>	  
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="yes"?>
@@ -200,7 +200,8 @@
           </t>
         </section>
         
-        <section title="CAPPORT REST API DELETE URL">
+        <section title="CAPPORT REST API DELETE URL"
+                 anchor="DELETE_request">
           <t>
             The CAPPORT API Server SHOULD respond to HTTP DELETE
             requests to the provided URL that specify an Accept header
@@ -208,6 +209,11 @@
             to protected networks immediately.  The CAPPORT API Server
             SHOULD NOT allow any device other than the User Equipment
             to DELETE the network access of the User Equipment.
+          </t>
+          <t>
+            The CAPPORT API Server MAY delete the session token
+            (<xref target="json_session_token_object"/>) for this User
+            Equipment as part of the DELETE request.
           </t>
         </section>
       </section>
@@ -218,7 +224,8 @@
 	    Object Notation (JSON) <xref target="RFC7159"/>.  This 
 	    document specifies the structure of the JSON structures
 	    and message using the JSON Content Rules (JCR) defined in 
-	    draft-newton-rdap-jcr <xref target="I-D.newton-rdap-jcr"/>.
+	    draft-newton-json-content-rules 
+      <xref target="I-D.newton-json-content-rules"/>.
 	</t>
         <section title="CAPPORT Common Elements">
           <t>
@@ -236,26 +243,34 @@
               <figure>
 		<artwork xml:space="preserve">
     $toplevel = {
-      $networks
-      $session_token
+      $networks ,
+      $session_token ?
     }
                 </artwork>
               </figure>
+            </t>
+            <t>
+              The toplevel object MUST contain a networks object.
+            </t>
+            <t>
+              The CAPPORT API Server responses MUST contain a
+              session_token object.   The session-token
+              object contains a session token which will be used in 
+              ICMP requests as discussed in RFC 7710.
+            </t>
+            <t>
+              <spanx>QUESTION:</spanx> Should the session token just be 
+              provided by the server, or should it be negotiated 
+              between the client and server using something like a DH 
+              exchange? 
             </t>
           </section>
           
           <section title="Networks Object" anchor="json_networks_object">
             <t>
               The networks object represents the list of networks
-              being acted on in this CAPPORT session.  The session-token
-	      object contains a session token which will be used in 
-	      ICMP requests as discussed in RFC 7710.
+              being acted on in this CAPPORT session. 
             </t>
-	    <t>
-	      QUESTION: Should the session token just be provided by 
-	      the server, or should it be negotiated between the 
-	      client and server using something like a DH exchange?
-	    </t>
             <t>
               <figure>
 		<artwork xml:space="preserve">
@@ -368,9 +383,28 @@
             </t>
 	  </section>
           <section title="Session Token Object" anchor="json_session_token_object">
-	    <t>
-	      TODO:  this section
-	    </t>
+            <t>
+              The session_token object describes the CAPPORT session token.
+            </t>
+            <t>
+              <figure suppress-title="false">
+                <artwork xml:space="preserve">
+    $session_token = "session_token" : base64
+                </artwork>
+              </figure>
+            </t>
+            <t>
+              The session_token object MUST include a "session_token" 
+              key whose value is a base64-encoded string of a 32-bit 
+              session token. This token will be used as proposed in 
+              <xref target="I-D.larose-capport-architecture"/>. The 
+              CAPPORT API Server SHOULD send the same session token to 
+              a given User Equipment in every response, until the User 
+              Equipment DELETEs its network access 
+              (<xref target="DELETE_request"/>). After a DELETE, the 
+              CAPPORT API Server MAY generate a new session token if 
+              the User Equipment makes a new request. 
+            </t>
           </section>
         </section>
 
