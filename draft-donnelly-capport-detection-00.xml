@@ -17,7 +17,7 @@
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
 
-<rfc category="info" docName="draft-donnelly-capport-detection-00.xml">
+<rfc category="info" docName="draft-donnelly-capport-detection-00">
   <front>
     <title>Captive Portal Detection and Interaction</title>
 
@@ -108,7 +108,7 @@
 	(RAs) to acquire an IP address and to determine the URL for the
         local CAPPORT API Server.  This details for the first phase are
 	described in RFC 7710 <xref target="RFC7710"/>, and the rest 
-	of this document assumes that the User Equiments already has
+	of this document assumes that the User Equipments already has
 	a URL to reach the CAPPORT API Server.
       </t>
       <t>
@@ -149,8 +149,8 @@
       <t>
 	As decribed above, to use the CAPPORT API, User Equipment
 	needs a URL that can be used to reach the CAPPORT API Server.
-	DHCP Servers and IPv6 Routers shoudl provide, and User
-	Equipment SHOULD obtain, the required URL using the DCHP
+	DHCP Servers and IPv6 Routers should provide, and User
+	Equipment SHOULD obtain, the required URL using the
 	DCHP Captive-Portal Option or the IPv6 RA Captive-Portal
 	Option, as described in <xref target="RFC7710"/>.
       </t>
