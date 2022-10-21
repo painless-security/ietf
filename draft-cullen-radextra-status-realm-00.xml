@@ -4,6 +4,7 @@
 	  <!ENTITY rfc2119 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml'>
 	  <!ENTITY rfc2865 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2865.xml'>
           <!ENTITY rfc2866 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2866.xml'>
+          <!ENTITY rfc2869 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2869.xml'>
 	  <!ENTITY rfc3579 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3579.xml'>
 	  <!ENTITY rfc4270 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4270.xml'>
 	  <!ENTITY rfc4668 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4668.xml'>
@@ -11,7 +12,7 @@
 	  <!ENTITY rfc4670 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4670.xml'>
 	  <!ENTITY rfc4671 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4671.xml'>
 	  <!ENTITY rfc5997 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5997.xml'>
-	  <!ENTITY rfc7749 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7749.xml'>
+	  <!ENTITY rfc7991 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7991.xml'>
 ]>
 
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -26,26 +27,26 @@
 
 <rfc category="std" consensus="true" ipr="trust200902" docName="draft-cullen-radextra-status-realm-00">
   <front>
-    <title abbrev="Status-Realm-Requests for RADIUS">
-      Status-Realm-Requests for the Remote Authentication Dial-In User Service (RADIUS)
+    <title abbrev="Status-Realm for RADIUS">
+      Status-Realm for the Remote Authentication Dial-In User Service (RADIUS)
     </title>
 
     <author initials="M." surname="Cullen" fullname="Margaret Cullen">
       <organization>Painless Security</organization>
       <address>
-        <postal>
-          <street>4 High St., Suite 134</street>
-          <city>North Andover</city> <region>MA</region>
-          <code>01845</code>
-          <country>USA</country>
-        </postal>
         <phone>+1 (781)405-7464</phone>
         <email>margaret@painless-security.com</email>
-        <uri>http://www.painless-security.com</uri>
       </address>
     </author>
 
-    <date day="19" month="October" year="2022"/>
+    <author initials="A." surname="DeKok" fullname="Alan DeKok">
+      <organization>FreeRADIUS</organization>
+      <address>
+        <email>aland@freeradius.org</email>
+      </address>
+    </author>
+
+    <date day="23" month="October" year="2022"/>
 
     <area>SEC</area>
 
@@ -68,10 +69,8 @@
 	Authentication Dial-In User Service (RADIUS) protocol <xref
 	target="RFC2865"/>, enabling clients to query the status of a
 	RADIUS Identity Provider (IDP) realm across a fabric of RADIUS
-	proxies.  It also defines attributes to limit the number of
-	hops that a Status-Realm packet will traverse, and to return
-	information about the RADIUS proxies on path to the
-	destination realm.  
+	proxies.  It also defines a Max-Hop-Count attribute to limit
+	the number of hops that a Status-Realm packet will traverse.
       </t>
     </section>
 
@@ -106,7 +105,7 @@
       </t>
       <t>
 	When a Status-Realm-Request packet is received by an IDP
-	Server for the indicated realm, the IDP Server will respond
+	Server for the indicated realm, the IDP Server MUST respond
 	with a Status-Realm-Response packet.
       </t>
       <t>
@@ -160,26 +159,64 @@
 	<t>
 	  Status-Realm-Request packets reuse the RADIUS packet format,
 	  with the fields and values for those fields as defined in
-	  <xref target="RFC2865"/>, Section 3.  All of the text and
-	  diagrams of that section are not included here, only the
-	  differences required to implement Status-Realm-Request
-	  packets.
+	  <xref target="RFC2865"/>, Section 3.  
+	</t>
+	<t>
+	  A summary of the Status-Realm-Request packet format is shown
+	  below. 
+	</t>
+	<t>
+	  <artwork>
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Code      |  Identifier   |            Length             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                     Request Authenticator                     |
+|                                                               |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Attributes...
++-+-+-+-+-+-+-+-+-+-+-+-+-
+
+Code
+
+(TBD) for Status-Realm-Request.
+
+Identifier
+
+   The Identifier field MUST be changed whenever the content of
+   the Attributes field changes, and whenever a valid reply has
+   been received for a previous request.  For retransmissions,
+   the Identifier MUST remain unchanged.
+
+Request Authenticator
+
+   The Request Authenticator value MUST be changed each time a
+   new identifier is used.
+
+Attributes
+
+   The Attribute field is variable in length, and contains a
+   list of zero or more Attributes.
+	  </artwork>
 	</t>
 	<t>
 	  A Status-Realm-Request packet MUST include a
-	  Message-Authenticator attribute, as defined in [RFC2869],
-	  section 5.14. The Message-Authenticator provides per-packet
-	  authentication and integrity protection.  The Authenticator
-	  field of a Status-Realm-Request packet MUST be generated
-	  using the same method as that used for the Request
-	  Authenticator field of Access-Request packets.
+	  Message-Authenticator attribute, as defined in <xref
+	  target="RFC2869"/>, section 5.14. The Message-Authenticator
+	  provides per-packet authentication and integrity protection.
+	  The Authenticator field of a Status-Realm-Request packet
+	  MUST be generated using the same method as that used for the
+	  Request Authenticator field of Access-Request packets.
 	</t>
 	<t>
 	  Status-Realm-Request packets MAY include NAS-Identifier, and
 	  one of NAS-IP-Address or NAS-IPv6-Address.  These attributes
 	  are not necessary for the operation of Status-Realm, but may
 	  be useful information to a server that receives those
-	  packets.  A Status-Realm-Request packet MAY also contain a
+	  packets.  A Status-Realm-Request packet MUST also contain a
 	  Max-Hop-Count attribute, as defined below.
 	</t>
 	<t>
@@ -195,13 +232,70 @@
 	<t>
 	  Status-Realm request packets reuse the RADIUS packet format,
 	  with the fields and values for those fields as defined in
-	  <xref target="RFC2865"/>, Section 3.  All of the text and
-	  diagrams of that section are not included here, only the
-	  differences required to implement Status-Realm-Request
-	  packets.
+	  <xref target="RFC2865"/>, Section 3.  
 	</t>
 	<t>
-	  Similarly, the Response Authenticator field of a
+	A summary of the Status-Realm-Response packet format is shown
+	below.  The fields are transmitted from left to right.
+	</t>
+	<t>
+	  <artwork>
+
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Code      |  Identifier   |            Length             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                     Response Authenticator                    |
+|                                                               |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Response Code                |  Attributes ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+Code
+
+(TBD) for Status-Realm-Response
+
+Identifier
+
+   The Identifier field is a copy of the Identifier field of the
+   Status-Realm-Request which caused this Status-Realm-Response
+
+Response Authenticator
+
+   The Response Authenticator value is calculated from the
+   Status-Realm-Request value, as described below
+
+Response Code
+   The Response Code will contain one of the following values:
+   
+   0        The target IDP realm is available
+      
+   1        No proxy route to the target IDP realm
+   2        No available servers for the target IDP realm
+   3        The target IDP realm is missing or invalid
+   4        Max-Hop-Count exceeded.
+
+   5-255    Unspecified error, the IDP is unreachable
+
+   257      Administratively prohibited, target IDP realm status
+               unknown.
+   258      Internal error, target IDP realm status unknown
+	       
+   259-511  Unspecified error, target IDP realm status unknown
+
+   512+     Reserved
+      
+Attributes
+
+   The Attribute field is variable in length, and contains a list of
+   zero or more Attributes.
+	  </artwork>
+	</t>
+	<t>
+	  The Response Authenticator field of a
 	  Status-Realm-Response packet MUST be generated using the
 	  same method used for calculating the Response Authenticator
 	  of an Access-Accept or an Access-Reject sent in response to
@@ -211,7 +305,7 @@
 	</t>	
 	<t>
 	  The Status-Realm-Response packet MAY contain a Reply-Message
-	  or Message- Authenticator attribute.  
+	  attribute and MAY contain a Message-Authenticator attribute.  
 	</t>
 	<t>
 	  Note that when a server responds to a Status-Realm-Request
@@ -227,15 +321,23 @@
       </t>
       <t>
 	<artwork>
-   0                   1                   2
-   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |     Type      |    Length     |     Count     |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+0                   1                   2
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |    Length     |     Count     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   Type        (TBD) for Max-Hop-Count
-   Length      8
-   Count       (0 to 255)
+Type
+
+   (TBD) for Max-Hop-Count
+
+Length
+
+   8
+
+Count
+
+   Integer (values 0 to 255)
 	</artwork>
       </t>
       <t>
@@ -254,7 +356,7 @@
       <t>
 	In the context of Status-Realm-Requests, this attribute can be
 	used to implement "traceroute-like" functionality.  By
-	starting with a Max-Hop-Count value of O, and inrementing the
+	starting with a Max-Hop-Count value of O, and incrementing the
 	value for each new request until the target IDP realm is
 	reached, the client can receive a series of error responses
 	from the proxies on the route to a given IDP realm.
@@ -285,9 +387,9 @@
 	</t>
 	<t>
 	  Clients MUST include the Message-Authenticator attribute in
-	  all Status-Realm packets.  Failure to do so would mean that
-	  the packets could be trivially spoofed, leading to potential
-	  denial-of-service (DoS) attacks.
+	  all Status-Realm-Request packets.  Failure to do so would
+	  mean that the packets could be trivially spoofed, leading to
+	  potential denial-of-service (DoS) attacks.
 	</t>
 	<t>
 	  The client MUST include a User-Name attribute in the
@@ -296,9 +398,12 @@
 	  target IDP realm for the Status-Realm request.
 	</t>
 	<t>
-	  Clients that support Status-Realm-Requests MUST support
-	  setting the value of the Max-Hop-Count Attribute described
-	  above.
+	  Clients that support Status-Realm-Requests SHOULD allow a
+	  user or administrator to set or configure the Count value of
+	  the Max-Hop-Count Attribute described above.  If a different
+	  value is not indicated, the client MUST include a
+	  Max-Hop-Count attribute with a Count value of 255 in the
+	  Status-Realm-Request packet.
 	</t>
 	<t>
 	  The client MAY increment packet counters as a result of
@@ -348,8 +453,8 @@
 	  or is configured not to respond to them, then it MUST
 	  silently discard the packet.  If a server receives a
 	  Status-Realm-Request packet from a client from which it is
-	  configured not to accept Status-Realm-Requests, then it MUST
-	  silently discard the packet.
+	  configured not to accept Status-Realm-Requests, then it
+	  MUST silently discard the packet.
 	</t>
 	<t>
 	  If a server supports Status-Realm-Request packets, is
@@ -365,13 +470,14 @@
 	  portion of the User-Name attribute to determine if the
 	  target realm in the User-Name request matches a local realm
 	  served by the server.  If it does match a local realm, the
-	  server should respond indicating that the target IDP realm
-	  is reachable.  If the target IDP realm does not match a
-	  local realm, then the server should determine whether it is
-	  configured to proxy packets towards the target IDP realm.
-	  If so, the server will follow the proxy requirements,
-	  below. Servers SHOULD ignore the value of the "user" portion
-	  of the User-Name attribute, if any.
+	  server should send a Status-Realm-Response packet indicating
+	  that the target IDP realm is reachable (Response Code = 1).
+	  If the target IDP realm does not match a local realm, then
+	  the server should determine whether it is configured to
+	  proxy packets towards the target IDP realm.  If so, the
+	  server will follow the proxy requirements, below. Servers
+	  SHOULD ignore the value of the "user" portion of the
+	  User-Name attribute, if any.
 	</t>
 	<t>
 	  Servers SHOULD NOT discard Status-Realm packets merely
@@ -382,22 +488,29 @@
 	  about the server.
 	</t>
 	<t>
-	  The server MAY decide not to respond to a
+	  The server MAY decide to send an error response to a
 	  Status-Realm-Request packet based on local-site policy.  For
 	  example, a server that is running but is unable to perform
-	  its normal activities MAY silently discard
-	  Status-Realm-Request packets.  This situation can happen,
-	  for example, when a server requires access to a database for
-	  normal operation, but the connection to that database is
-	  down.  Or, it may happen when the accepted load on the
-	  server is lower than the current load.
+	  its normal duties SHOULD send a Status-Realm-Response packet
+	  indicating an internal error (Response Code = 257).  This
+	  situation can happen, for example, when a server requires
+	  access to a database for normal operation, but the
+	  connection to that database is down.  Or, it may happen when
+	  the accepted load on the server is lower than the current
+	  load.
 	</t>
 	<t>
-	  The server MAY increment packet counters as a result of
-	  receiving a Status-Realm-Request packet or sending a
-	  Status-Realm-Response packet.  The server SHOULD NOT perform
-	  any other action that is normally performed when it receives
-	  a Request packet, other than sending a Response packet.
+	  The server MAY increment packet counters or create log
+	  entries as a result of receiving a Status-Realm-Request
+	  packet or sending a Status-Realm-Response packet.  The
+	  server SHOULD NOT perform any other action that is normally
+	  performed when it receives a Request packet, other than
+	  sending a Response packet.
+	</t>
+	<t>
+	  If the Status-Realm-Request packet includes a Max-Hop-Count
+	  attribute, that attribute (with it's current value) MUST BE
+	  returned in any corresponding Status-Realm-Response packet.
 	</t>
 	<t>
 	  Note that <xref target="RFC2865"/>, Section 3, defines a
@@ -423,50 +536,65 @@
 	  the client.  
 	</t>
 	<t>
-	  RADIUS proxies that support Status-Realm-Requests MUST support
-	  the Max-Hop-Count attribute defined above.  Before
-	  forwarding a Status-Realm-Request packet, a proxy
-	  should check the Max-Hop-Count Attribute.  If the
-	  Max-Hop-Count attribute is present and it's Count is zero
-	  (0), the proxy must send a Status-Realm-Response indicating
-	  that the hop count has been exceeded, and MUST NOT forward
-	  the packet.  If the Max-Hop-Count attribute is not zero, the
-	  proxy MUST decrement the Max-Hop-Count value before
-	  forwarding the packet.
+	  RADIUS proxies that support Status-Realm-Requests MUST
+	  support the Max-Hop-Count attribute defined above.  Before
+	  forwarding a Status-Realm-Request packet, a proxy MUST check
+	  the Max-Hop-Count Attribute.  If the Max-Hop-Count attribute
+	  is present and the Count is zero (0), the proxy MUST send a
+	  Status-Realm-Response indicating that the hop count has been
+	  exceeded (Response Code = 4), and MUST NOT forward the
+	  packet.  If the Max-Hop-Count attribute is present, and the
+	  Count value is not zero, the proxy MUST decrement the
+	  Max-Hop-Count value before forwarding the packet.
 	</t>
 	<t>
 	  The RADIUS proxy MUST check the "realm" portion of the
 	  User-Name attribute in the Status-Realm-Request to determine
-	  the target IDP realm for the request.  The
+	  the target IDP realm for the request.  If the target IDP
+	  realm is missing or malformed, the RADIUS proxy MUST send
+	  a Status-Realm-Response indicating an invalid realm
+	  (Response Code = 3).  If the realm is properly formed, the
 	  Status-Realm-Request packet should be proxied toward the
 	  target IDP realm, using the same next-hop RADIUS server that
 	  the proxy server would use for other request packets
 	  received on the same port.
 	</t>
 	<t>
-	  In some cases, a RADIUS proxy might not have an
-	  available next-hop RADIUS server for the target IDP
-	  realm. In that case, the RADIUS proxy server MUST send a
-	  Status-Realm-Response packet indicating that the target IDP
-	  realm is unreachable.
+	  In some cases, a RADIUS proxy may not have an available
+	  next-hop RADIUS server for the target IDP realm. In that
+	  case, the RADIUS proxy server MUST send a
+	  Status-Realm-Response packet indicating that there is no
+	  proxy route to the target IDP realm (Response Code = 1).
 	</t>
 	<t>
 	  In cases where a RADIUS proxy is configured to have a direct
 	  connection to the RADIUS server(s) of the target IDP realm,
 	  but is configured not to forward Status-Realm-Request
-	  packets to the target IDP server(s), the proxy MAY use
-	  other methods to determine the status of the target IDP
-	  realm (such as Status-Server packets or recent
-	  Access-Request state information), and send a
-	  Status-Realm-Response indicating the determined state of the
-	  target IDP realm.
+	  packets to the target IDP server(s), the proxy MAY use other
+	  methods to determine the status of the target IDP realm
+	  (such as Status-Server packets or recent Access-Request
+	  state information), and send a Status-Realm-Response
+	  indicating the determined state of the target IDP realm
+	  (Response Code = 0 or 2).  If the proxy is configured not to
+	  forward Status-Realm-Request packet to the target IDP realm
+	  and does not have other methods to detect the status of the
+	  target IDP realm, it SHOULD return a Status-Realm-Response
+	  packet indicating that the request is administrative
+	  prohibited (Response Code = 257).
 	</t>
       </section>
     </section>
 
-    <section title="Status-Realm Packet Flow Examples">
+    <section title="Status-Realm-Request Packet Flow Examples">
       <t>
-	This section is TBD.
+	There is an initial implementation of this mechanism available
+	here:
+      </t>
+      <t>
+	https://github.com/alandekok/freeradius-server/tree/Status-Realm
+      </t>
+      <t>
+	Message exchange examples are TBD.
       </t>
     </section>
     
@@ -544,7 +672,7 @@
    0            0              2      User-Password
    0            0              3      CHAP-Password
    0-1          0              4      NAS-IP-Address (Note 1)
-   0            1+            18      Reply-Message
+   0            0+            18      Reply-Message
    0+           0+            26      Vendor-Specific
    0-1          0             32      NAS-Identifier (Note 1)
    0            0             79      EAP-Message
@@ -568,11 +696,11 @@
 	<artwork>
    0     This attribute MUST NOT be present in packet.
    0+    Zero or more instances of this attribute MAY be present in
-         packet.
+         the packet.
    0-1   Zero or one instance of this attribute MAY be present in
-         packet.
+         the packet.
    1     Exactly one instance of this attribute MUST be present in
-         packet.
+         the packet.
 	</artwork>
       </t>
     </section>
@@ -639,7 +767,7 @@
 	IDP Server that does not have a direct connection to the
 	Status-Realm client.  However, Access-Request packets are also
 	forwarded, and there should be no additional attacks other
-	than those incurred by fowarding Status-Realm-Request packets.
+	than those incurred by forwarding Status-Realm-Request packets.
       </t>
       <t>
 	Attacks on cryptographic hashes are well known <xref
@@ -654,29 +782,26 @@
     <section title="Acknowledgements">
       <t>
 	This document was written using xml2rfc, as described in
-	<xref target="RFC7749"/>
+	<xref target="RFC7991"/>
       </t>
       <t>
 	Some of the sections in this document were adapted from the
 	description of the Status-Server RADIUS Packet Type Code in
 	<xref target="RFC5997"/>.
       </t>
-      <t>
-	The authors appreciate the contributions of the following
-	people to this draft: Alan DeKok
-      </t>
     </section>
   </middle>
 
   <back>
     <references title="Normative References">
-      &rfc1321;
       &rfc2119;
       &rfc2865;
     </references>
     
     <references title="Informative References">
+      &rfc1321;
       &rfc2866;
+      &rfc2869;
       &rfc3579;
       &rfc4270;
       &rfc4668;
@@ -684,7 +809,7 @@
       &rfc4670;
       &rfc4671;
       &rfc5997;
-      &rfc7749;
+      &rfc7991;
     </references>
   </back>
 </rfc>
