@@ -11,6 +11,7 @@
 	  <!ENTITY rfc4669 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4669.xml'>
 	  <!ENTITY rfc4670 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4670.xml'>
 	  <!ENTITY rfc4671 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4671.xml'>
+	  <!ENTITY rfc5580 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5580.xml'>
 	  <!ENTITY rfc5997 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5997.xml'>
 	  <!ENTITY rfc7991 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7991.xml'>
 	  <!ENTITY rfc8044 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8044.xml'>
@@ -60,7 +61,7 @@
       <organization>Federated Solutions</organization>
       <address>
 	<phone>+44 (0)7510 666 950</phone>
-	<email>josh@federated-solutions.com>
+	<email>josh@federated-solutions.com</email>
       </address>
     </author>
     
@@ -111,7 +112,6 @@
 	  <li>Max-Hop-Count (TBD)</li>
 	  <li>Server-Identifier (TBD)</li>
 	</ul>
-      </t>
       </t>
     </section>
 
@@ -229,7 +229,6 @@
 	    the Last-Hop Proxy may or may not know that is the
 	    Last-Hop Proxy for a given RADIUS Request.
 	  </t>
-	  <t>
 	</list>
       </t>
       <t>
@@ -338,6 +337,8 @@
 	  packet.  If not, it adds its own Server Identifier to the
 	  packet before forwarding it.
 	</t>
+      </section>
+    </section>
     
     <section title="Packet Formats">
       <t>
@@ -469,14 +470,14 @@
       <t>
 	This section defines a new RADIUS attribute,
 	Status-Realm-Response-Code (TBD).  This is of type tlv, as
-	defined in <zref target="RFC8044"/>, section 3.13.  It
+	defined in <xref target="RFC8044"/>, section 3.13.  It
 	contains 3 sub-attributes:
       </t>
       <t>
 	<ul>
-	  <li> Response-Code (Type = 1)
-	  <li> Hop-Count (Type = 2) 
-	  <li> Responding-Server (Type = 3)
+	  <li> Response-Code (Type = 1)</li>
+	  <li> Hop-Count (Type = 2) </li>
+	  <li> Responding-Server (Type = 3)</li>
 	</ul>
       </t>
       <t>
@@ -1047,6 +1048,7 @@
       &rfc4669;
       &rfc4670;
       &rfc4671;
+      &rfc5580;
       &rfc5997;
       &rfc7991;
     </references>
