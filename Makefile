@@ -2,12 +2,13 @@
 
 objects=$(wildcard *.xml) $(wildcard */*.xml) $(wildcard **/*.xml)
 bases=$(basename $(objects))
+txts=$(addsuffix .txt, $(bases))
 
-rfcs: $(bases).txt
-	echo "objects: "
-	echo $(objects)
-	echo "bases: "
-	echo $(bases)
+rfcs: $(txts)
+	@echo "objects: "
+	@echo $(objects)
+	@echo "bases: "
+	@echo $(bases)
 
 all_formats: $(bases).txt $(bases).html $(bases).md
 
