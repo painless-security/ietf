@@ -1,0 +1,426 @@
+<?xml version="1.0"?>
+<!DOCTYPE rfc [
+	  <!ENTITY rfc2119 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml'>
+	  <!ENTITY rfc2865 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2865.xml'>
+	  <!ENTITY rfc5997 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5997.xml'>
+	  <!ENTITY rfc7749 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7749.xml'>
+	  <!ENTITY rfc4668 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4668.xml'>
+	  <!ENTITY rfc4669 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4669.xml'>
+	  <!ENTITY rfc4670 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4670.xml'>
+	  <!ENTITY rfc4671 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4671.xml'>
+	  <!ENTITY rfc3579 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3579.xml'>
+	  <!ENTITY rfc4270 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4270.xml'>
+	  <!ENTITY rfc1321 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1321.xml'>
+	  <!ENTITY rfc5080 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5080.xml'>
+	  <!ENTITY rfc5580 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5580.xml'>
+	  <!ENTITY rfc3579 PUBLIC '' 'http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3579.xml'>
+]>
+
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes"?>
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="6"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+
+<rfc category="std" consensus="true" ipr="trust200902"
+     docName="draft-donnelly-radius-loop-detection-00" submissionType="IETF">
+  <front>
+    <title abbrev="Loop Detection for RADIUS">
+      Loop Detection for the Remote Authentication Dial-In User Service (RADIUS)
+    </title>
+
+    <author initials="M." surname="Donnelly" fullname="Mark Donnelly">
+      <organization>Painless Security</organization>
+      <address>
+        <postal>
+          <street>4 High St., Suite 134</street>
+          <city>North Andover</city> <region>MA</region>
+          <code>01845</code>
+          <country>USA</country>
+        </postal>
+        <phone>+1 (857)928-5967</phone>
+        <email>mark@painless-security.com</email>
+        <uri>http://www.painless-security.com</uri>
+      </address>
+    </author>
+
+    <date day="20" month="October" year="2022"/>
+
+    <area>SEC</area>
+
+    <workgroup>radextra BOF</workgroup>
+
+    <abstract>
+      <t>
+	This document describes attributes to be used in the Remote Authentication Dial-In User Service protocol <xref target="RFC2865"/> request proxying to enable the detection of loops.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t>
+	This document describes attributes to be used in the Remote
+	Authentication Dial-In User Service protocol
+	<xref target="RFC2865"/> request proxying to enable the
+	detection of loops.
+      </t>
+      <t>
+	One common deployment for RADIUS servers is in an
+	authentication network, to allow users from one organization
+	to authenticate to systems in a different organization using
+	their home organization credentials.  In complex
+	authentication networks, authentication requests are proxied
+	by multiple RADIUS proxy servers on their way from the
+	supplicant to the authoritative identity providing RADIUS
+	server.  A misconfiguration in the RADIUS servers can result
+	in authentication requests being routed in a loop.  Loops not
+	only cause the authentication in question to fail, but they
+	can also cause a more general failure in the authentication
+	network as the proxy RADIUS servers involved in the loop
+	become busy and unresponsive to other traffic.
+      </t>
+      <t>
+	The generally accepted method to prevent loops is for the
+	proxy to add a Vendor-Specific Attribute to the RADIUS request
+	and reject the authentication if that attribute is present.
+	This is sufficient to prevent loops, but has drawbacks.
+	First, this method relies upon operator configuration, which
+	means that the loop detection will likely not be configured
+	until after the operator has encountered and diagnosed loops
+	at least once.  Second, this method requires the operator to
+	acquire a Private Enterprise Number from IANA which, while
+	free and easy to acquire, takes time and effort to acquire
+	and is a barrier to implementation.  Finally, proxies may be
+	configured to strip Vendor-Specific Attributes from requests,
+	defeating the loop detection.
+      </t>
+    </section>
+
+    <section title="Requirements Notation">
+      <t>
+	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+	NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+	"OPTIONAL" in this document are to be interpreted as described
+	in <xref target="RFC2119"/>.
+      </t>
+    </section>
+
+    <section title="Overview">
+      <t>
+	
+      </t>
+    </section>
+      
+    <section title="Proxy-Identifier Attribute">
+      <t>
+	This attribute MAY be used to record which RADIUS proxies have
+	handled a given RADIUS request.  It MAY be used with any
+	RADIUS request type, including authentication requests
+	(Access-Request, Access-Accept, Access-Reject,
+	Access-Challenge), and accounting requests
+	(Accounting-Request, Accounting-Response).
+      </t>
+
+      <t>
+	This attribute holds a value composed of a series of
+	Type-Length-Value (TLV) sub-attributes.  Each sub-attribute
+	contains an identifier for a RADIUS proxy.  The
+	Proxy-Identifier MUST have at least one sub-attribute and MAY
+	have more than one sub-attribute.  If multiple sub-attributes
+	are present, a RADIUS proxy MUST match all of the
+	sub-attributes in order to match the identifier.
+      </t>
+
+      <t>
+	A summary of the Proxy-Identifier Sub-Attribute format is
+	shown below. The fields are transmitted from left to right.
+      </t>
+
+      <artwork type="ascii-art">
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| Proxy-        |  Length       | Value ...
+|  Identifier-  |               |
+|  Type         |               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      </artwork>
+
+      <dl>
+	<dt>
+	  Proxy-Identifier-Type
+	</dt>
+	<dd>
+	  Integer indicating which type of proxy identifier is being
+	  communicated.
+	</dd>
+	
+	<dt>
+	  Length
+	</dt>
+	<dd>
+	  Integer indicating the length of the value
+	</dd>
+	
+	<dt>
+	  Value
+	</dt>
+	<dd>
+	  The value of the proxy identifier
+	</dd>
+	
+      </dl>
+
+      <section title="Proxy-Name">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    1
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    2 + length(value)
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The Proxy-Name.  This analogue of the Operator-Name <xref
+	    target="RFC5580"/> indicates the organizational name for
+	    the proxy.  For instance, a single logical proxy might
+	    be run by multiple real servers, all of which share a
+	    single Proy-Name value to indicate that they are logically
+	    the same unit.
+	  </dd>
+	</dl>
+      </section>
+      
+      <section title="Proxy-Identifier">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    2
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    2 + length(value)
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The Proxy-Identifier.  This analogue of the NAS-Identifier
+	    <xref target="RFC2865"/> indicates the name of this
+	    particular proxy server.  For instance, this could be used
+	    to differntiate between multiple real servers running
+	    within a single logical RADIUS proxy.
+	  </dd>
+	</dl>
+      </section>
+      
+      <section title="Proxy-IPv4-Address">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    3
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    6
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The IPv4 address of this RADIUS proxy.  This SHOULD be the
+	    address that was used as a destination for this RADIUS
+	    request.  So, if a RADIUS proxy server has a routable IP
+	    address mapped to a private IP address, the routable IP
+	    address SHOULD be used.
+	  </dd>
+	</dl>
+      </section>
+      
+      <section title="Proxy-IPv6-Address">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    4
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    18
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The IPv6 address of this RADIUS proxy.  This SHOULD be the
+	    address that was used as a destination for this RADIUS
+	    request.  So, if a RADIUS proxy server has a routable IP
+	    address mapped to a private IP address, the routable IP
+	    address SHOULD be used.
+	  </dd>
+	</dl>
+      </section>
+      
+      <section title="Proxy-Port">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    5
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    6
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The UDP or TCP port of this RADIUS proxy.  This SHOULD be
+	    the port that was used as a destination for this RADIUS
+	    request.  So, if a RADIUS proxy server has a routable IP
+	    address mapped to a private IP address, the routable IP
+	    address port SHOULD be used.
+	  </dd>
+	</dl>
+      </section>
+      
+      <section title="Configuration-Identifier">
+	<dl>
+	  <dt>
+	    Proxy-Identifier-Type
+	  </dt>
+	  <dd>
+	    6
+	  </dd>
+	  
+	  <dt>
+	    Length
+	  </dt>
+	  <dd>
+	    2 + length(value)
+	  </dd>
+	  
+	  <dt>
+	    Value
+	  </dt>
+	  <dd>
+	    The identifier for the server configuration used in this
+	    routing.  If a server can be configured to handle requests
+	    differently depending on the RADIUS client or request
+	    data, then this SHOULD be used to indicate which
+	    configuration the request used.
+	  </dd>
+	</dl>
+      </section>
+      
+    </section>
+
+    <section title="Server responsibilities">
+      <t>
+	The proxy SHOULD add a Proxy-Identifier attribute to any
+	RADIUS request it receives, populated with information used to
+	identify itself, before proxying a request to its next hop.
+      </t>
+
+      <t>
+	When adding the Proxy-Identifier Attribute, the proxy MUST add
+	at least one sub-attribute that accurately describes the
+	proxy. The proxy MAY add more than one Proxy-Identifier
+	sub-attribute that accurately describes the proxy.
+      </t>
+
+      <t>
+	The proxy MUST inspect every RADIUS request it receives for
+	the Proxy-Identifier attributes.  If an authentication request
+	contains a Proxy-Identifier attribute that matches the current
+	server, the proxy server MUST respond to the request with
+	Access-Reject.  If an accounting request contains a
+	Proxy-Identifier attribute that matches the current server,
+	the proxy server MUST silently discard the request.
+      </t>
+
+      <t>
+	The proxy MUST consider a Proxy-Identifier to be a match if
+	all of the sub-attributes in the Proxy-Identifier Attribute
+	match the proxy.  The proxy MUST NOT consider a
+	Proxy-Identifier to be a match if any of the sub-attributes do
+	not match the proxy.
+      </t>
+    </section>
+    
+    <section title="IANA Considerations">
+      <t>
+	This document defines the Proxy-Identifier RADIUS Attribute
+	(TBD), which should be assigned by IANA from the Unassigned
+	block of RADIUS Attribute Types.
+      </t>
+
+      <t>
+	This document adds a new namespace that requires registration:
+	the Proxy-Identifier-Type.
+      </t>
+    </section>
+
+    <section title="Security Considerations">
+      <t>
+      </t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>
+	This document was written using xml2rfc, as described in
+	<xref target="RFC7749"/>
+      </t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      &rfc2119;
+      &rfc2865;
+    </references>
+    
+    <references title="Informative References">
+      &rfc5580;
+      &rfc7749;
+    </references>
+  </back>
+</rfc>
